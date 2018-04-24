@@ -32,16 +32,16 @@ import java.util.ArrayList;
 public class Events
 {
 	
-	private final static String					LT = "Events";
+	private final static String TAG = "Events";
 	
 	public class InputDevice {
 		
-		private int m_nId;
-		private String m_szPath, m_szName;
-		private boolean m_bOpen;
+		private int mId;
+		private String mPath, mName;
+		private boolean mOpen;
 		
 		InputDevice(int id, String path) {
-			m_nId = id; m_szPath = path; 
+			mId = id; mPath = path;
 		}
 		
 		public int InjectEvent() {
@@ -49,7 +49,7 @@ public class Events
 		}
 		
 		public int getPollingEvent() {
-			return PollDev(m_nId);
+			return PollDev(mId);
 		}
 
 		public int getSuccessfulPollingType() {
@@ -63,22 +63,22 @@ public class Events
 		}
 		
 		public boolean getOpen() {
-			return m_bOpen;
+			return mOpen;
 		}
 		public int getId() {
-			return m_nId;
+			return mId;
 		}
 		public String getPath() {
-			return m_szPath;
+			return mPath;
 		}
 		public String getName() {
-			return m_szName;
+			return mName;
 		}
 		
 		public void Close() {
-			m_bOpen  = false;
-			if(m_bOpen) {
-				RemoveDev(m_nId);
+			mOpen = false;
+			if(mOpen) {
+				RemoveDev(mId);
 			}
 		}
 
@@ -100,20 +100,20 @@ public class Events
 		          ABS_Y = 0x36;
 
 		public int SendTouchDownAbs(int x, int y ) {
-			intSendEvent(m_nId, EV_ABS, ABS_X, x); //set x coord
-			intSendEvent(m_nId, EV_ABS, ABS_Y, y); //set y coord
-			intSendEvent(m_nId, EV_KEY, BTN_TOUCH, DOWN); // touch down
-			intSendEvent(m_nId, EV_SYNC, SYNC_REPORT, SYNC_REPORT);
-			intSendEvent(m_nId, EV_ABS, ABS_X,x);
-			intSendEvent(m_nId, EV_ABS, ABS_Y,y);
-			intSendEvent(m_nId, EV_SYNC, SYNC_REPORT, SYNC_REPORT);
+			intSendEvent(mId, EV_ABS, ABS_X, x); //set x coord
+			intSendEvent(mId, EV_ABS, ABS_Y, y); //set y coord
+			intSendEvent(mId, EV_KEY, BTN_TOUCH, DOWN); // touch down
+			intSendEvent(mId, EV_SYNC, SYNC_REPORT, SYNC_REPORT);
+			intSendEvent(mId, EV_ABS, ABS_X,x);
+			intSendEvent(mId, EV_ABS, ABS_Y,y);
+			intSendEvent(mId, EV_SYNC, SYNC_REPORT, SYNC_REPORT);
 //			try {
 //				Thread.sleep(3000);
 //			} catch (Exception e){
 //
 //			}
-			intSendEvent(m_nId, EV_KEY, BTN_TOUCH,UP); //touch up
-			intSendEvent(m_nId, EV_SYNC, SYNC_REPORT, SYNC_REPORT);
+			intSendEvent(mId, EV_KEY, BTN_TOUCH,UP); //touch up
+			intSendEvent(mId, EV_SYNC, SYNC_REPORT, SYNC_REPORT);
 			return 1;
 		}
 
@@ -127,17 +127,17 @@ public class Events
 			currX = sX; currY = sY;
 
 			//touch down
-			intSendEvent(m_nId, EV_ABS, ABS_X, sX); //set x coord
-			intSendEvent(m_nId, EV_ABS, ABS_Y, sY); //set y coord
-			intSendEvent(m_nId, EV_KEY, BTN_TOUCH, DOWN); // touch down
-			intSendEvent(m_nId, EV_SYNC, SYNC_REPORT, SYNC_REPORT);
+			intSendEvent(mId, EV_ABS, ABS_X, sX); //set x coord
+			intSendEvent(mId, EV_ABS, ABS_Y, sY); //set y coord
+			intSendEvent(mId, EV_KEY, BTN_TOUCH, DOWN); // touch down
+			intSendEvent(mId, EV_SYNC, SYNC_REPORT, SYNC_REPORT);
 
 			int targetX,targetY;
 			//start move
 			do {
-				intSendEvent(m_nId, EV_ABS, ABS_X, currX);
-				intSendEvent(m_nId, EV_ABS, ABS_Y, currY);
-				intSendEvent(m_nId, EV_SYNC, SYNC_REPORT, SYNC_REPORT);
+				intSendEvent(mId, EV_ABS, ABS_X, currX);
+				intSendEvent(mId, EV_ABS, ABS_Y, currY);
+				intSendEvent(mId, EV_SYNC, SYNC_REPORT, SYNC_REPORT);
 
 				currX += deltaX;
 				currY += deltaY;
@@ -151,30 +151,30 @@ public class Events
 				}
 			} while(targetX > 4 || targetY > 4);
 
-			intSendEvent(m_nId, EV_KEY, BTN_TOUCH,UP); //touch up
-			intSendEvent(m_nId, EV_SYNC, SYNC_REPORT, SYNC_REPORT);
+			intSendEvent(mId, EV_KEY, BTN_TOUCH,UP); //touch up
+			intSendEvent(mId, EV_SYNC, SYNC_REPORT, SYNC_REPORT);
 
 			return 1;
 		}
 
 		public boolean Open(boolean forceOpen) {
-			int res = OpenDev(m_nId);
+			int res = OpenDev(mId);
 	   		// if opening fails, we might not have the correct permissions, try changing 660 to 666
 	   		if (res != 0) {
 	   			// possible only if we have root
 	   			if(forceOpen && Shell.isSuAvailable()) { 
 	   				// set new permissions
-	   				Shell.runCommand("chmod 666 "+ m_szPath);
+	   				Shell.runCommand("chmod 666 "+ mPath);
 	   				// reopen
-	   			    res = OpenDev(m_nId);
+	   			    res = OpenDev(mId);
 	   			}
 	   		}
-	   		m_szName = getDevName(m_nId);
-	   		m_bOpen = (res == 0);
+	   		mName = getDevName(mId);
+	   		mOpen = (res == 0);
 	   		// debug
-	   		Log.d(LT,  "Open:"+m_szPath+" Name:"+m_szName+" Result:"+m_bOpen);
+	   		Log.d(TAG,  "Open:"+ mPath +" Name:"+ mName +" Result:"+ mOpen);
 	   		// done, return
-	   		return m_bOpen;
+	   		return mOpen;
 	   	}
 	}
 	
